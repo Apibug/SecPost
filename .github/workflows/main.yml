@@ -11,8 +11,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-          with:
-            node-version: '16'
+        with:
+          node-version: '16'
     
       - name: Sync Repository 1
         run: |
@@ -55,4 +55,3 @@ jobs:
           git config user.email "9147218@qq.com"
           git pull https://github.com/Cuerz/PoC-ExP.git main  # 更改为源仓库的URL和分支名
           git push origin main  # 更改为目标仓库的分支名
-          
