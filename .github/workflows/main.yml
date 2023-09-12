@@ -2,7 +2,7 @@ name: Sync Repositories
 
 on:
   schedule:
-    - cron: '0 */6 * * *'  # 每6小时执行一次同步
+    - cron: '* * * * *'  # 每分钟执行一次同步
 
 jobs:
   sync:
