@@ -8,42 +8,43 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: .
+        node-version: 16
+        
     steps:
     - uses: actions/checkout@v2
       with:
         repository: Threekiii/Awesome-POC
         path: Awesome-POC
-        node-version: 16
 
     - uses: actions/checkout@v2
       with: 
         repository: ibaiw/2023Hvv
         path: 2023Hvv
-        node-version: 16
 
     - uses: actions/checkout@v2
       with:
         repository: Threekiii/Awesome-Redteam
         path: Awesome-Redteam
-        node-version: 16
 
     - uses: actions/checkout@v2
       with:
         repository: heise5yuetian/yougar0.github.io
         path: yougar0.github.io
-        node-version: 16
 
     - uses: actions/checkout@v2
       with:
         repository: Threekiii/Vulhub-Reproduce  
         path: Vulhub-Reproduce
-        node-version: 16
 
     - uses: actions/checkout@v2
       with:
         repository: Cuerz/PoC-ExP
         path: PoC-ExP
-        node-version: 16
 
     - name: Sync to my repo
       uses: repo-sync/github-sync@v2
