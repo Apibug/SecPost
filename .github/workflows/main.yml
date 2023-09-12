@@ -1,57 +1,48 @@
-name: Sync Repositories
+name: 自动抓取漏洞库
 
 on:
   schedule:
-    - cron: '* * * * *'  # 每分钟执行一次同步
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          node-version: '16'
-    
-      - name: Sync Repository 1
-        run: |
-          git config user.name "Apibug"
-          git config user.email "9147218@qq.com"
-          git pull https://github.com/Threekiii/Awesome-POC.git master  # 更改为源仓库的URL和分支名
-          git push origin main  # 更改为目标仓库的分支名
+    - uses: actions/checkout@v2
+      with:
+        repository: Threekiii/Awesome-POC
+        path: Awesome-POC
 
-      - name: Sync Repository 2
-        run: |
-          git config user.name "Apibug"
-          git config user.email "9147218@qq.com"
-          git pull https://github.com/ibaiw/2023Hvv.git main  # 更改为源仓库的URL和分支名
-          git push origin main  # 更改为目标仓库的分支名
-          
-      - name: Sync Repository 3
-        run: |
-          git config user.name "Apibug"
-          git config user.email "9147218@qq.com"
-          git pull https://github.com/Threekiii/Awesome-Redteam.git main  # 更改为源仓库的URL和分支名
-          git push origin main  # 更改为目标仓库的分支名
-          
-      - name: Sync Repository 4
-        run: |
-          git config user.name "Apibug"
-          git config user.email "9147218@qq.com"
-          git pull https://github.com/heise5yuetian/yougar0.github.io.git main  # 更改为源仓库的URL和分支名
-          git push origin main  # 更改为目标仓库的分支名
+    - uses: actions/checkout@v2
+      with: 
+        repository: ibaiw/2023Hvv
+        path: 2023Hvv
 
-      - name: Sync Repository 5
-        run: |
-          git config user.name "Apibug"
-          git config user.email "9147218@qq.com"
-          git pull https://github.com/Threekiii/Vulhub-Reproduce.git main  # 更改为源仓库的URL和分支名
-          git push origin main  # 更改为目标仓库的分支名
+    - uses: actions/checkout@v2
+      with:
+        repository: Threekiii/Awesome-Redteam
+        path: Awesome-Redteam
 
-      - name: Sync Repository 6
-        run: |
-          git config user.name "Apibug"
-          git config user.email "9147218@qq.com"
-          git pull https://github.com/Cuerz/PoC-ExP.git main  # 更改为源仓库的URL和分支名
-          git push origin main  # 更改为目标仓库的分支名
+    - uses: actions/checkout@v2
+      with:
+        repository: heise5yuetian/yougar0.github.io
+        path: yougar0.github.io
+
+    - uses: actions/checkout@v2
+      with:
+        repository: Threekiii/Vulhub-Reproduce  
+        path: Vulhub-Reproduce
+
+    - uses: actions/checkout@v2
+      with:
+        repository: Cuerz/PoC-ExP
+        path: PoC-ExP
+
+    - name: Sync to my repo
+      uses: repo-sync/github-sync@v2
+      with:
+        source_repo: "https://github.com/Apibug/SecPost.git"
+        source_branch: "main" 
+        destination_branch: "main"
+        github_token: ${{ secrets.GITHUB_TOKEN }}
