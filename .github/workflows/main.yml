@@ -6,23 +6,22 @@ on:
   workflow_dispatch:
 
 jobs:
+
   sync:
+
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        shell: bash
-        working-directory: .
-        node-version: 16
-        
+    node-version: 16
+
     steps:
+
     - uses: actions/checkout@v2
       with:
         repository: Threekiii/Awesome-POC
         path: Awesome-POC
 
-    - uses: actions/checkout@v2
-      with: 
+    - uses: actions/checkout@v2  
+      with:
         repository: ibaiw/2023Hvv
         path: 2023Hvv
 
@@ -37,8 +36,8 @@ jobs:
         path: yougar0.github.io
 
     - uses: actions/checkout@v2
-      with:
-        repository: Threekiii/Vulhub-Reproduce  
+      with:  
+        repository: Threekiii/Vulhub-Reproduce
         path: Vulhub-Reproduce
 
     - uses: actions/checkout@v2
@@ -50,6 +49,6 @@ jobs:
       uses: repo-sync/github-sync@v2
       with:
         source_repo: "https://github.com/Apibug/SecPost.git"
-        source_branch: "main" 
-        destination_branch: "main"
+        source_branch: "main"
+        destination_branch: "main" 
         github_token: ${{ secrets.GITHUB_TOKEN }}
