@@ -1,28 +1,27 @@
-name: 自动抓取漏洞库
+name: Apibug抓取漏洞库
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+  - cron: '0 0 * * *'
   workflow_dispatch:
 
 jobs:
 
-  build:
+ build:
     runs-on: ubuntu-latest
-    node-version: 16
-    
+
     steps:
-    
-    - name: Checkout this repo
+
+    - name: Checkout this repo  
       uses: actions/checkout@v2
-      
+
     - name: Sync Awesome-POC
       uses: actions/checkout@v2
-      with:
+      with: 
         repository: Threekiii/Awesome-POC
         path: Awesome-POC
 
-    - name: Sync 2023Hvv 
+    - name: Sync 2023Hvv
       uses: actions/checkout@v2
       with:
         repository: ibaiw/2023Hvv
@@ -56,6 +55,8 @@ jobs:
       uses: repo-sync/github-sync@v2
       with:
         source_repo: "https://github.com/Apibug/SecPost.git"
-        source_branch: "main" 
+        source_branch: "main"
         destination_branch: "main"
         github_token: ${{ secrets.GITHUB_TOKEN }}
+
+node-version: 16
